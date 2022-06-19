@@ -39,8 +39,8 @@ resource "azurerm_lb" "vault" {
 }
 
 resource "azurerm_lb_backend_address_pool" "vault" {
-  loadbalancer_id     = azurerm_lb.vault.id
-  name                = "BackEndAddressPool"
+  loadbalancer_id = azurerm_lb.vault.id
+  name            = "BackEndAddressPool"
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "vault" {
@@ -50,9 +50,9 @@ resource "azurerm_network_interface_backend_address_pool_association" "vault" {
 }
 
 resource "azurerm_lb_probe" "vault" {
-  loadbalancer_id     = azurerm_lb.vault.id
-  name                = "vault-http"
-  port                = 8200
+  loadbalancer_id = azurerm_lb.vault.id
+  name            = "vault-http"
+  port            = 8200
 }
 
 resource "azurerm_lb_rule" "vault" {
@@ -63,14 +63,14 @@ resource "azurerm_lb_rule" "vault" {
   backend_port                   = 8200
   frontend_ip_configuration_name = "configuration"
   probe_id                       = azurerm_lb_probe.vault.id
-  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.vault.id]
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.vault.id]
 }
 
 
 resource "azurerm_linux_virtual_machine" "vault" {
   name                  = "vault-vm"
-  location            = var.resourcelocation
-  resource_group_name = var.resourcename
+  location              = var.resourcelocation
+  resource_group_name   = var.resourcename
   network_interface_ids = [azurerm_network_interface.vault.id]
   size                  = "Standard_DS1_v2"
 
@@ -85,7 +85,7 @@ resource "azurerm_linux_virtual_machine" "vault" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  custom_data    = base64encode(file("${path.module}/scripts/vault.sh"))
+  custom_data = base64encode(file("${path.module}/scripts/vault.sh"))
 
   computer_name                   = "vault-vm"
   admin_username                  = "azureuser"

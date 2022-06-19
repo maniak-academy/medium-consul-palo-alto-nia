@@ -39,8 +39,8 @@ resource "azurerm_lb" "consul" {
 }
 
 resource "azurerm_lb_backend_address_pool" "consul" {
-  loadbalancer_id     = azurerm_lb.consul.id
-  name                = "BackEndAddressPool"
+  loadbalancer_id = azurerm_lb.consul.id
+  name            = "BackEndAddressPool"
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "consul" {
@@ -50,9 +50,9 @@ resource "azurerm_network_interface_backend_address_pool_association" "consul" {
 }
 
 resource "azurerm_lb_probe" "consul-ssh" {
-  loadbalancer_id     = azurerm_lb.consul.id
-  name                = "consul-ssh"
-  port                = 22
+  loadbalancer_id = azurerm_lb.consul.id
+  name            = "consul-ssh"
+  port            = 22
 }
 
 resource "azurerm_lb_rule" "consul-ssh" {
@@ -63,13 +63,13 @@ resource "azurerm_lb_rule" "consul-ssh" {
   backend_port                   = 22
   frontend_ip_configuration_name = "consulserverNicConfiguration"
   probe_id                       = azurerm_lb_probe.consul.id
-  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.consul.id]
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.consul.id]
 }
 
 resource "azurerm_lb_probe" "consul" {
-  loadbalancer_id     = azurerm_lb.consul.id
-  name                = "consul-http"
-  port                = 8500
+  loadbalancer_id = azurerm_lb.consul.id
+  name            = "consul-http"
+  port            = 8500
 }
 
 
@@ -81,14 +81,14 @@ resource "azurerm_lb_rule" "consul" {
   backend_port                   = 8500
   frontend_ip_configuration_name = "consulserverNicConfiguration"
   probe_id                       = azurerm_lb_probe.consul.id
-  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.consul.id]
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.consul.id]
 }
 
 
 resource "azurerm_linux_virtual_machine" "consul" {
   name                  = "consul-vm"
-  location            = var.resourcelocation
-  resource_group_name = var.resourcename
+  location              = var.resourcelocation
+  resource_group_name   = var.resourcename
   network_interface_ids = [azurerm_network_interface.consul.id]
   size                  = "Standard_DS1_v2"
 
@@ -103,7 +103,7 @@ resource "azurerm_linux_virtual_machine" "consul" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  custom_data    = base64encode(file("${path.module}/scripts/consul.sh"))
+  custom_data = base64encode(file("${path.module}/scripts/consul.sh"))
 
   computer_name                   = "consul-vm"
   admin_username                  = "azureuser"

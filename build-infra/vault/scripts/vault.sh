@@ -1,4 +1,5 @@
 #!/bin/bash
+local_ipv4="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
 
 apt-get update -y
 apt-get install -y docker.io
@@ -20,3 +21,5 @@ services:
 EOF
 
 /usr/local/bin/docker-compose up -d
+
+
