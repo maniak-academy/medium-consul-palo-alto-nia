@@ -24,5 +24,4 @@ module "pan-os" {
   internet_subnet  = module.network.internet_subnet
   untrusted_subnet = module.network.untrusted_subnet
   app_subnet       = module.network.app_subnet
-  secure_subnet    = module.network.secure_subnet
 }

@@ -32,10 +32,6 @@ output "untrusted_subnet" {
 output "app_subnet" {
   value = module.app-network.vnet_subnets[3]
 }
-output "secure_subnet" {
-  value = module.app-network.vnet_subnets[4]
-}
-
 output "bastion_ip" {
   value = azurerm_public_ip.bastion.ip_address
 }

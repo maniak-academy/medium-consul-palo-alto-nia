@@ -18,8 +18,8 @@ resource "random_password" "pafwpassword" {
   override_special = "_%!"
 }
 
-resource "azurerm_storage_account" "PAN_FW_STG_AC" {
-  name                     = "strgaccpafw-${random_id.suffix.dec}"
+resource "azurerm_storage_account" "pan_fw_stg_ac" {
+  name                     = "strgaccpafw${random_id.suffix.dec}"
   location                 = var.resourcelocation
   resource_group_name      = var.resourcename
   account_replication_type = "LRS"
@@ -27,7 +27,7 @@ resource "azurerm_storage_account" "PAN_FW_STG_AC" {
 }
 
 resource "azurerm_public_ip" "PublicIP_0" {
-  name                = "fwPublicIP-${random_id.suffix.dec}"
+  name                = "fwMgmtPublicIP-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
   allocation_method   = "Static"
@@ -51,13 +51,13 @@ resource "azurerm_network_interface" "VNIC0" {
   ip_configuration {
     name                          = "ipconfig0"
     subnet_id                     = var.mgmt_subnet
-    private_ip_address_allocation = "static"
+    private_ip_address_allocation = "Static"
     private_ip_address            = var.IPAddressMgmtNetwork
     public_ip_address_id          = azurerm_public_ip.PublicIP_0.id
   }
 
   tags = {
-    displayName = join("", tolist("NetworkInterfaces", "0"))
+    displayName = "MgmtInterface"
   }
 }
 
@@ -65,19 +65,18 @@ resource "azurerm_network_interface" "VNIC1" {
   name                = "FWeth1-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
-  #  depends_on           = [azurerm_virtual_network.untrusted_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {
     name                          = "ipconfig1"
     subnet_id                     = var.internet_subnet
-    private_ip_address_allocation = "static"
+    private_ip_address_allocation = "Static"
     private_ip_address            = var.IPAddressInternetNetwork
     public_ip_address_id          = azurerm_public_ip.PublicIP_1.id
   }
 
   tags = {
-    displayName = join("", tolist("NetworkInterfaces", "1"))
+    displayName = "NetworkInterfaces1"
   }
 }
 
@@ -85,18 +84,17 @@ resource "azurerm_network_interface" "VNIC2" {
   name                = "FWeth2-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
-  #  depends_on           = [azurerm_virtual_network.untrusted_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {
     name                          = "ipconfig2"
     subnet_id                     = var.untrusted_subnet
-    private_ip_address_allocation = "static"
+    private_ip_address_allocation = "Static"
     private_ip_address            = var.IPAddressUntrustedNetwork
   }
 
   tags = {
-    displayName = join("", tolist("NetworkInterfaces", "2"))
+    displayName = "NetworkInterfaces2"
   }
 }
 
@@ -104,38 +102,20 @@ resource "azurerm_network_interface" "VNIC3" {
   name                = "FWeth3-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
-  #  depends_on           = [azurerm_virtual_network.untrusted_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {
     name                          = "ipconfig3"
     subnet_id                     = var.app_subnet
-    private_ip_address_allocation = "static"
+    private_ip_address_allocation = "Static"
     private_ip_address            = var.IPAddressAppNetwork
   }
 
   tags = {
-    displayName = join("", tolist("NetworkInterfaces", "3"))
+    displayName = "NetworkInterfaces3"
   }
 }
-resource "azurerm_network_interface" "VNIC4" {
-  name                = "FWeth3-${random_id.suffix.dec}"
-  location            = var.resourcelocation
-  resource_group_name = var.resourcename
-  #  depends_on           = [azurerm_virtual_network.secure_subnet]
-  enable_ip_forwarding = true
 
-  ip_configuration {
-    name                          = "ipconfig4"
-    subnet_id                     = var.secure_subnet
-    private_ip_address_allocation = "static"
-    private_ip_address            = var.IPAddressSecureNetwork
-  }
-
-  tags = {
-    displayName = join("", tolist("NetworkInterfaces", "4"))
-  }
-}
 
 resource "azurerm_virtual_machine" "PAN_FW_FW" {
   name                = "vmPANW-${random_id.suffix.dec}"
@@ -147,7 +127,6 @@ resource "azurerm_virtual_machine" "PAN_FW_FW" {
     azurerm_network_interface.VNIC1,
     azurerm_network_interface.VNIC2,
     azurerm_network_interface.VNIC3,
-    azurerm_network_interface.VNIC4,
     azurerm_public_ip.PublicIP_0,
     azurerm_public_ip.PublicIP_1
   ]
@@ -166,7 +145,7 @@ resource "azurerm_virtual_machine" "PAN_FW_FW" {
 
   storage_os_disk {
     name          = "vmPANW-${random_id.suffix.dec}-osDisk"
-    vhd_uri       = "${azurerm_storage_account.PAN_FW_STG_AC.primary_blob_endpoint}vhds/vmPANW-${random_id.suffix.dec}-${var.fwOffer}-${var.fwSku}.vhd"
+    vhd_uri       = "${azurerm_storage_account.pan_fw_stg_ac.primary_blob_endpoint}vhds/vmPANW-${random_id.suffix.dec}-${var.fwOffer}-${var.fwSku}.vhd"
     caching       = "ReadWrite"
     create_option = "FromImage"
   }
@@ -181,8 +160,7 @@ resource "azurerm_virtual_machine" "PAN_FW_FW" {
   network_interface_ids = [azurerm_network_interface.VNIC0.id,
     azurerm_network_interface.VNIC1.id,
     azurerm_network_interface.VNIC2.id,
-    azurerm_network_interface.VNIC3.id,
-    azurerm_network_interface.VNIC4.id
+    azurerm_network_interface.VNIC3.id
   ]
 
   os_profile_linux_config {

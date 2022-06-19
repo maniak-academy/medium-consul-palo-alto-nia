@@ -119,87 +119,11 @@ resource "azurerm_linux_virtual_machine" "consul" {
   }
 }
 
-resource "azurerm_network_security_group" "consul-sg" {
-  name                = "consul-security-group"
-  location            = var.resourcelocation
-  resource_group_name = var.resourcename
 
-  security_rule {
-    name                       = "HTTPS-80"
-    priority                   = 1001
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "HTTPS-8500"
-    priority                   = 1002
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "8500"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "RPC"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "8300"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "Serf"
-    priority                   = 1004
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "8301"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "SSH"
-    priority                   = 1005
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "app"
-    priority                   = 1006
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "9091"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-}
 
 
 resource "azurerm_network_interface_security_group_association" "consul" {
   network_interface_id      = azurerm_network_interface.consul.id
-  network_security_group_id = azurerm_network_security_group.consul-sg.id
+  network_security_group_id = azurerm_network_security_group.consulsg.id
+  depends_on = [azurerm_network_security_group.consulsg]
 }

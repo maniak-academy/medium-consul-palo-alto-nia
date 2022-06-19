@@ -62,29 +62,7 @@ resource "azurerm_route_table" "PAN_FW_RT_DMZ" {
     environment = "Production"
   }
 }
-resource "azurerm_route_table" "PAN_FW_RT_Secure" {
-  name                = "routeToSecure"
-  location            = var.resourcelocation
-  resource_group_name = var.resourcename
 
-  route {
-    name                   = "routeToSecure"
-    address_prefix         = "10.3.5.0/24"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "10.3.5.5"
-  }
-
-  route {
-    name                   = "secure-default-route"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = "10.3.5.5"
-  }
-
-  tags = {
-    environment = "Production"
-  }
-}
 
 
 #resource "azurerm_subnet_route_table_association" "example2" {

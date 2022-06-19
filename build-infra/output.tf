@@ -12,5 +12,9 @@ output "pa_username" {
 }
 
 output "pa_password" {
-  value = module.pan-os.pa_password
+  value     = module.pan-os.pa_password
+  sensitive = true
+}
+output "paloalto_mgmt_ip" {
+  value ="https://${ module.pan-os.FirewallIP}"
 }

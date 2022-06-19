@@ -3,19 +3,19 @@ output "FirewallIP" {
 }
 
 output "FirewallIPURL" {
-  value = "${azurerm_public_ip.PublicIP_0.ip_address}"
+  value = azurerm_public_ip.PublicIP_0.ip_address
 }
 
 output "FirewallFQDN" {
-  value = "${azurerm_public_ip.PublicIP_0.fqdn}"
+  value = azurerm_public_ip.PublicIP_0.fqdn
 }
 
 output "WebIP" {
-  value = "${azurerm_public_ip.PublicIP_1.ip_address}"
+  value = azurerm_public_ip.PublicIP_1.ip_address
 }
 
 output "WebFQDN" {
-  value = "${azurerm_public_ip.PublicIP_1.fqdn}"
+  value = azurerm_public_ip.PublicIP_1.fqdn
 }
 
 output "pa_username" {

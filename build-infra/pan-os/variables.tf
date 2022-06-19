@@ -16,9 +16,7 @@ variable "IPAddressUntrustedNetwork" {
 variable "IPAddressAppNetwork" {
   default = "10.3.4.5"
 }
-variable "IPAddressSecureNetwork" {
-  default = "10.3.5.5"
-}
+
 variable "IPAddressMgmtNetwork" {
   default = "10.3.1.5"
 }
@@ -46,7 +44,7 @@ variable "fwSku" {
 }
 
 variable "fwOffer" {
-  default = "vmseries1"
+  default = "vmseries-flex"
 }
 
 variable "fwPublisher" {
@@ -65,21 +63,6 @@ variable "db-vm-name" {
   default = "database-vm"
 }
 
-variable "gvmSize" {
-  default = "Standard_A1"
-}
-
-variable "imagePublisher" {
-  default = "Canonical"
-}
-
-variable "imageOffer" {
-  default = "UbuntuServer"
-}
-
-variable "ubuntuOSVersion" {
-  default = "16.04-LTS"
-}
 
 
 variable "resourcename" {}
@@ -88,4 +71,3 @@ variable "mgmt_subnet" {}
 variable "internet_subnet" {}
 variable "untrusted_subnet" {}
 variable "app_subnet" {}
-variable "secure_subnet" {}
