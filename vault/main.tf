@@ -1,4 +1,10 @@
 
+resource "random_string" "participant" {
+  length  = 4
+  special = false
+  upper   = false
+  numeric = false
+}
 resource "azurerm_public_ip" "vault" {
   name                = "vault-ip"
   location            = var.resourcelocation
@@ -40,7 +46,7 @@ resource "azurerm_lb_backend_address_pool" "vault" {
 resource "azurerm_network_interface_backend_address_pool_association" "vault" {
   network_interface_id    = azurerm_network_interface.vault.id
   ip_configuration_name   = "configuration"
-  backend_address_pool_ids = azurerm_lb_backend_address_pool.vault.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.vault.id
 }
 
 resource "azurerm_lb_probe" "vault" {
@@ -57,7 +63,7 @@ resource "azurerm_lb_rule" "vault" {
   backend_port                   = 8200
   frontend_ip_configuration_name = "configuration"
   probe_id                       = azurerm_lb_probe.vault.id
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.vault.id
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.vault.id]
 }
 
 
@@ -75,11 +81,11 @@ resource "azurerm_linux_virtual_machine" "vault" {
     version   = "latest"
   }
   os_disk {
-    name                 = "myOsDisk"
+    name                 = "myOsDisk${random_string.participant.result}"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  custom_data    = file("${path.module}/scripts/vault.sh")
+  custom_data    = base64encode(file("${path.module}/scripts/vault.sh"))
 
   computer_name                   = "vault-vm"
   admin_username                  = "azureuser"

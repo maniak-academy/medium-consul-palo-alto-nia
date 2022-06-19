@@ -82,7 +82,7 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     version   = "latest"
   }
   os_disk {
-    name                 = "myOsDisk"
+    name                 = "myOsDisk${random_string.participant.result}"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
