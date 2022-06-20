@@ -4,7 +4,7 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
-
+*.terraform.lock.hcl
 #cets
 *.pem
 **.pem
