@@ -125,5 +125,4 @@ resource "azurerm_linux_virtual_machine" "consul" {
 resource "azurerm_network_interface_security_group_association" "consul" {
   network_interface_id      = azurerm_network_interface.consul.id
   network_security_group_id = azurerm_network_security_group.consulsg.id
-  depends_on = [azurerm_network_security_group.consulsg]
 }
