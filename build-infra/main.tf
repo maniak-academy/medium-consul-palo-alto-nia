@@ -25,3 +25,12 @@ module "pan-os" {
   untrusted_subnet = module.network.untrusted_subnet
   app_subnet       = module.network.app_subnet
 }
+
+module "app" {
+  source           = "./app"
+  resourcename     = module.network.resource_group_name
+  resourcelocation = module.network.resource_group_location
+  app_subnet       = module.network.app_subnet
+  untrusted_subnet = module.network.untrusted_subnet
+  consul_server_ip       = module.consul.consul_ip
+}

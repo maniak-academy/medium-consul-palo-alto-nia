@@ -21,6 +21,8 @@ resource "random_password" "vm-password" {
   override_special = "!@#$%&"
 }
 
+
+
 module "shared-svcs-network" {
   source              = "Azure/network/azurerm"
   vnet_name           = "shared-svcs-vnet"
@@ -41,7 +43,7 @@ module "app-network" {
   address_space       = "10.3.0.0/16"
   subnet_prefixes     = ["10.3.1.0/24", "10.3.2.0/24", "10.3.3.0/24", "10.3.4.0/24"]
   subnet_names        = ["MGMT", "INTERNET", "UNTRUSTED", "APP",]
-
+  
   tags = {
     owner = "sebastian@maniak.io"
   }
