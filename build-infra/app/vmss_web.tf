@@ -1,5 +1,5 @@
 resource "azurerm_linux_virtual_machine_scale_set" "web" {
-  depends_on = [time_sleep.wait_30_seconds]
+  depends_on = [var.privateipfwnic3]
   name                            = "web-vmss"
   location                        = var.resourcelocation
   resource_group_name             = var.resourcename

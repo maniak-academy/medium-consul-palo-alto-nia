@@ -17,3 +17,9 @@ output "pa_password" {
 output "paloalto_mgmt_ip" {
   value = module.pan-os.FirewallIP
 }
+output "privateipfwnic2" {
+  value = module.pan-os.privateipfwnic2
+}
+output "privateipfwnic3" {
+  value = module.pan-os.privateipfwnic3
+}

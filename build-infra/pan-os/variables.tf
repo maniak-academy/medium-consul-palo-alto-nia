@@ -63,8 +63,6 @@ variable "db-vm-name" {
   default = "database-vm"
 }
 
-
-
 variable "resourcename" {}
 variable "resourcelocation" {}
 variable "mgmt_subnet" {}

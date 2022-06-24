@@ -137,3 +137,4 @@ resource "azurerm_network_interface_security_group_association" "vault" {
   network_interface_id      = azurerm_network_interface.vault.id
   network_security_group_id = azurerm_network_security_group.vault.id
 }
+

@@ -65,6 +65,7 @@ resource "azurerm_network_interface" "VNIC1" {
   name                = "FWeth1-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
+  depends_on           = [var.internet_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {
@@ -84,6 +85,7 @@ resource "azurerm_network_interface" "VNIC2" {
   name                = "FWeth2-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
+  depends_on           = [var.untrusted_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {
@@ -102,6 +104,7 @@ resource "azurerm_network_interface" "VNIC3" {
   name                = "FWeth3-${random_id.suffix.dec}"
   location            = var.resourcelocation
   resource_group_name = var.resourcename
+  depends_on           = [var.app_subnet]
   enable_ip_forwarding = true
 
   ip_configuration {

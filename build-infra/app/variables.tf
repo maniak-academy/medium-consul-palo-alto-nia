@@ -17,3 +17,9 @@ variable "app_subnet" {
 variable "untrusted_subnet" {
 
 }
+variable "privateipfwnic2" {
+  
+}
+variable "privateipfwnic3" {
+  
+}

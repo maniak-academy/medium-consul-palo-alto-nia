@@ -8,6 +8,11 @@ snap install vault
 curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
+cat << EOF > /etc/profile.d/vault.sh
+export VAULT_ADDR=http://127.0.0.1:8200
+export VAULT_TOKEN=root
+EOF
+
 cat <<-EOF > /docker-compose.yml
 version: '3'
 services:
