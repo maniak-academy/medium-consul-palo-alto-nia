@@ -39,3 +39,10 @@ module "app" {
   privateipfwnic3        = module.pan-os.privateipfwnic3
 
 }
+
+# module "boundary" {
+#   source              = "./boundary"
+#   controller_vm_count = 1
+#   worker_vm_count     = 1
+#   boundary_version    = var.boundary_version
+# }
