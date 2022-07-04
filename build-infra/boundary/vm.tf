@@ -13,15 +13,15 @@ resource "local_file" "private_key" {
 # Create User Identities for Controller VMs and Worker VMs
 # Could probably do this with a loop
 resource "azurerm_user_assigned_identity" "controller" {
-  resource_group_name = azurerm_resource_group.boundary.name
-  location            = var.location
+  resource_group_name = var.resourcename
+  location            = var.resourcelocation
 
   name = local.controller_user_id
 }
 
 resource "azurerm_user_assigned_identity" "worker" {
-  resource_group_name = azurerm_resource_group.boundary.name
-  location            = var.location
+  resource_group_name = var.resourcename
+  location            = var.resourcelocation
 
   name = local.worker_user_id
 }
@@ -29,23 +29,22 @@ resource "azurerm_user_assigned_identity" "worker" {
 ##################### CONTROLLER VM RESOURCES ###################################
 resource "azurerm_availability_set" "controller" {
   name                         = local.controller_vm
-  location                     = var.location
-  resource_group_name          = azurerm_resource_group.boundary.name
+  location                     = var.resourcelocation
+  resource_group_name          = var.resourcename
   platform_fault_domain_count  = 3
   platform_update_domain_count = 2
   managed                      = true
 }
 
-
 resource "azurerm_network_interface" "controller" {
   count               = var.controller_vm_count
   name                = "${local.controller_vm}-${count.index}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = module.vnet.vnet_subnets[0]
+    subnet_id                     = var.shared_subnet
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -67,8 +66,8 @@ resource "azurerm_network_interface_application_security_group_association" "con
 resource "azurerm_linux_virtual_machine" "controller" {
   count               = var.controller_vm_count
   name                = "${local.controller_vm}-${count.index}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
   size                = var.controller_vm_size
   admin_username      = "azureuser"
   computer_name       = "controller-${count.index}"
@@ -123,7 +122,7 @@ resource "azurerm_linux_virtual_machine" "controller" {
       public_ip        = azurerm_public_ip.boundary.ip_address
       controller_ips   = azurerm_network_interface.controller.*.private_ip_address
       db_username      = var.db_username
-      db_password      = var.db_password
+      db_password      = random_password.boundarypassword.result
       db_name          = local.pg_name
       db_endpoint      = azurerm_postgresql_server.boundary.fqdn
     })
@@ -135,12 +134,12 @@ resource "azurerm_linux_virtual_machine" "controller" {
 resource "azurerm_network_interface" "worker" {
   count               = var.worker_vm_count
   name                = "${local.worker_vm}-${count.index}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = module.vnet.vnet_subnets[1]
+    subnet_id                     = var.shared_subnet
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -162,8 +161,8 @@ resource "azurerm_network_interface_application_security_group_association" "wor
 resource "azurerm_linux_virtual_machine" "worker" {
   count               = var.worker_vm_count
   name                = "${local.worker_vm}-${count.index}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
   size                = var.worker_vm_size
   admin_username      = "azureuser"
   computer_name       = "worker-${count.index}"
@@ -216,7 +215,7 @@ resource "azurerm_linux_virtual_machine" "worker" {
       public_ip        = azurerm_public_ip.boundary.ip_address
       controller_ips   = azurerm_network_interface.controller[*].private_ip_address
       db_username      = var.db_username
-      db_password      = var.db_password
+      db_password      = random_password.boundarypassword.result
       db_name          = local.pg_name
       db_endpoint      = azurerm_postgresql_server.boundary.fqdn
     })

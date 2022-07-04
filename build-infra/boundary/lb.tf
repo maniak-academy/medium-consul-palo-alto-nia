@@ -2,18 +2,18 @@
 # The domain label is based on the resource group name
 resource "azurerm_public_ip" "boundary" {
   name                = local.pip_name
-  resource_group_name = azurerm_resource_group.boundary.name
-  location            = azurerm_resource_group.boundary.location
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
   allocation_method   = "Static"
-  domain_name_label   = lower(azurerm_resource_group.boundary.name)
+  domain_name_label   = var.resourcename
   sku                 = "Standard"
 }
 
 # Create a load balancer for the workers and controllers to use
 resource "azurerm_lb" "boundary" {
   name                = local.lb_name
-  location            = azurerm_resource_group.boundary.location
-  resource_group_name = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
   sku                 = "Standard"
 
   frontend_ip_configuration {
@@ -47,7 +47,6 @@ resource "azurerm_network_interface_backend_address_pool_association" "worker" {
 
 # All health probe for controller nodes
 resource "azurerm_lb_probe" "controller_9200" {
-  resource_group_name = azurerm_resource_group.boundary.name
   loadbalancer_id     = azurerm_lb.boundary.id
   name                = "port-9200"
   port                = 9200
@@ -55,7 +54,6 @@ resource "azurerm_lb_probe" "controller_9200" {
 
 # All health probe for worker nodes
 resource "azurerm_lb_probe" "worker_9202" {
-  resource_group_name = azurerm_resource_group.boundary.name
   loadbalancer_id     = azurerm_lb.boundary.id
   name                = "port-9202"
   port                = 9202
@@ -63,7 +61,6 @@ resource "azurerm_lb_probe" "worker_9202" {
 
 # Add LB rule for the controllers
 resource "azurerm_lb_rule" "controller" {
-  resource_group_name            = azurerm_resource_group.boundary.name
   loadbalancer_id                = azurerm_lb.boundary.id
   name                           = "Controller"
   protocol                       = "Tcp"
@@ -71,12 +68,11 @@ resource "azurerm_lb_rule" "controller" {
   backend_port                   = 9200
   frontend_ip_configuration_name = "PublicIPAddress"
   probe_id                       = azurerm_lb_probe.controller_9200.id
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.pools["controller"].id
+  backend_address_pool_ids        = [azurerm_lb_backend_address_pool.pools["controller"].id]
 }
 
 # Add LB rule for the workers
 resource "azurerm_lb_rule" "worker" {
-  resource_group_name            = azurerm_resource_group.boundary.name
   loadbalancer_id                = azurerm_lb.boundary.id
   name                           = "Worker"
   protocol                       = "Tcp"
@@ -84,14 +80,14 @@ resource "azurerm_lb_rule" "worker" {
   backend_port                   = 9202
   frontend_ip_configuration_name = "PublicIPAddress"
   probe_id                       = azurerm_lb_probe.worker_9202.id
-  backend_address_pool_id        = azurerm_lb_backend_address_pool.pools["worker"].id
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pools["worker"].id]
 }
 
 # Add an NAT rule for the controller node using port 2022 
 # This is so you can SSH into the controller to troubleshoot 
 # deployment issues.
 resource "azurerm_lb_nat_rule" "controller" {
-  resource_group_name            = azurerm_resource_group.boundary.name
+  resource_group_name = var.resourcename
   loadbalancer_id                = azurerm_lb.boundary.id
   name                           = "ssh-controller"
   protocol                       = "Tcp"
@@ -111,7 +107,7 @@ resource "azurerm_network_interface_nat_rule_association" "controller" {
 # This is so you can SSH into the controller to troubleshoot 
 # deployment issues.
 resource "azurerm_lb_nat_rule" "worker" {
-  resource_group_name            = azurerm_resource_group.boundary.name
+  resource_group_name = var.resourcename
   loadbalancer_id                = azurerm_lb.boundary.id
   name                           = "ssh-worker"
   protocol                       = "Tcp"

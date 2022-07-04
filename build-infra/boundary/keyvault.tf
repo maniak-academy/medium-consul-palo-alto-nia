@@ -1,14 +1,13 @@
+data "azurerm_client_config" "current" {}
 
 # Get your current IP address to provide access to Key Vault in the network acls
-data "http" "my_ip" {
-  url = "142.114.161.132"
-}
+
 
 # Create key vault and access policies
 resource "azurerm_key_vault" "boundary" {
   name                       = local.vault_name
-  location                   = var.location
-  resource_group_name        = azurerm_resource_group.boundary.name
+  location            = var.resourcelocation
+  resource_group_name = var.resourcename
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   enabled_for_deployment     = true
   soft_delete_retention_days = 7
@@ -18,13 +17,13 @@ resource "azurerm_key_vault" "boundary" {
 
   # Only allow access to the Key Vault from your public IP address and the controller and 
   # worker subnets. Also, allows access from Azure Services, which you could probably remove.
-  network_acls {
-    default_action             = "Deny"
-    bypass                     = "AzureServices"
-    ip_rules                   = ["${data.http.my_ip.body}/32"]
-    virtual_network_subnet_ids = [module.vnet.vnet_subnets[0], module.vnet.vnet_subnets[1]]
+  # network_acls {
+  #   default_action             = "Deny"
+  #   bypass                     = "AzureServices"
+  #   ip_rules                   = ["${var.my_ip}/32"]
+  #   virtual_network_subnet_ids = [var.shared_subnet, var.mgmt_subnet]
 
-  }
+  # }
 
 }
 
@@ -38,15 +37,15 @@ resource "azurerm_key_vault_access_policy" "controller" {
   object_id = azurerm_user_assigned_identity.controller.principal_id
 
   key_permissions = [
-    "get", "list", "update", "create", "decrypt", "encrypt", "unwrapKey", "wrapKey", "verify", "sign",
+    "Get", "List", "Update", "Create", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign",
   ]
 
   secret_permissions = [
-    "get", "list",
+    "Get", "List",
   ]
 
   certificate_permissions = [
-    "get", "list",
+    "Get", "List",
   ]
 }
 
@@ -59,15 +58,15 @@ resource "azurerm_key_vault_access_policy" "worker" {
   object_id = azurerm_user_assigned_identity.worker.principal_id
 
   key_permissions = [
-    "get", "list", "decrypt", "encrypt", "unwrapKey", "wrapKey", "verify", "sign",
+    "Get", "List", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign",
   ]
 
   secret_permissions = [
-    "get", "list",
+    "Get", "List",
   ]
 
   certificate_permissions = [
-    "get", "list",
+    "Get", "List",
   ]
 }
 
@@ -79,15 +78,15 @@ resource "azurerm_key_vault_access_policy" "you" {
   object_id = data.azurerm_client_config.current.object_id
 
   key_permissions = [
-    "get", "list", "update", "create", "decrypt", "encrypt", "unwrapKey", "wrapKey", "verify", "sign", "delete", "purge",
+    "Get", "List", "Update", "Create", "Decrypt", "Encrypt", "UnwrapKey", "WrapKey", "Verify", "Sign", "Delete", "Purge",
   ]
 
   secret_permissions = [
-    "get", "list", "set", "delete", "purge",
+    "Get", "List", "Set", "Delete", "Purge",
   ]
 
   certificate_permissions = [
-    "get", "list", "create", "import", "delete", "update", "purge",
+    "Get", "List", "Create", "Import", "Delete", "Update", "Purge",
   ]
 }
 
@@ -100,7 +99,7 @@ resource "azurerm_key_vault_access_policy" "sp" {
   object_id = azuread_service_principal.recovery_sp.id
 
   key_permissions = [
-    "get", "list", "wrapKey",
+    "Get", "List", "WrapKey",
   ]
 }
 

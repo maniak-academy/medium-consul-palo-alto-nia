@@ -4,15 +4,14 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.11.0"
     }
+    azuread = {
+      source = "hashicorp/azuread"
+      version = "2.25.0"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
 }
-
-# variable "boundary_version" {
-#   type    = string
-#   default = "0.9.0"
-# }
 

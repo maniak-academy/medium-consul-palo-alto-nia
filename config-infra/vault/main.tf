@@ -36,7 +36,12 @@ resource "vault_kv_secret_v2" "net_infra" {
   delete_all_versions        = true
   data_json                  = jsonencode(
   {
-    panpassword       =  data.terraform_remote_state.build-infra.outputs.pa_password
+    panpassword       =  data.terraform_remote_state.build-infra.outputs.pa_password,
+    username       =  data.terraform_remote_state.build-infra.outputs.pa_username
+
   }
   )
 }
+
+
+

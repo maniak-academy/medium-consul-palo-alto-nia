@@ -145,38 +145,16 @@ resource "panos_nat_rule_group" "app" {
 # Security Rule
 
 resource "panos_security_rule_group" "allow_app_traffic" {
-  position_keyword = "top"
-  depends_on = [panos_service_object.service-9090,
-                panos_address_group.cts-addr-grp-web,
-                panos_zone.internet_zone,
-                panos_zone.dmz_zone,
-                panos_zone.app_zone]
   rule {
-    name                  = "Allow traffic to BIG-IP"
-    source_zones          = ["Internet"]
+    name                  = "Allow web to talk to secure"
+    source_zones          = ["any"]
     source_addresses      = ["any"]
     source_users          = ["any"]
-    hip_profiles          = ["any"]
-    destination_zones     = ["DMZ"]
-    destination_addresses = ["10.3.2.5"]
+    destination_zones     = ["any"]
+    destination_addresses = ["any"]
     applications          = ["any"]
-    services              = ["service-http", "service-https", "service-9090"]
+    services              = ["any"]
     categories            = ["any"]
     action                = "allow"
-    description           = "Allow app traffic from Internet to BIG-IP"
-  }
-  rule {
-    name                  = "Allow traffic from BIG-IP to App"
-    source_zones          = ["DMZ"]
-    source_addresses      = ["any"]
-    source_users          = ["any"]
-    hip_profiles          = ["any"]
-    destination_zones     = ["Application"]
-    destination_addresses = ["cts-addr-grp-web"]
-    applications          = ["any"]
-    services              = ["service-http", "service-https", "service-9090"]
-    categories            = ["any"]
-    action                = "allow"
-    description           = "Allow app traffic from BIG-IP to app server"
   }
 }

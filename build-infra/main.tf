@@ -42,7 +42,12 @@ module "app" {
 
 # module "boundary" {
 #   source              = "./boundary"
+#   resourcename     = module.network.resource_group_name
+#   resourcelocation = module.network.resource_group_location
 #   controller_vm_count = 1
 #   worker_vm_count     = 1
-#   boundary_version    = var.boundary_version
+#   boundary_version    = "0.9.0"
+#   shared_subnet    = module.network.shared_svcs_subnets[0]
+#   mgmt_subnet      = module.network.mgmt_subnet
+#   my_ip = "76.68.107.212"
 # }

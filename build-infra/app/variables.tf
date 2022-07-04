@@ -1,9 +1,9 @@
 
 variable "app_count" {
-  default = 2
+  default = 1
 }
 variable "web_count" {
-  default = 2
+  default = 1
 }
 variable "consul_server_ip" {}
 variable "resourcename" {}
