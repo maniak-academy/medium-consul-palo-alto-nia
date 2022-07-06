@@ -11,7 +11,7 @@ data "terraform_remote_state" "build-infra" {
   backend = "local"
 
   config = {
-    path = "../../configuration/terraform.tfstate"
+    path = "../build-infra/terraform.tfstate"
   }
 }
 
