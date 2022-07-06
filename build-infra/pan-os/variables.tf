@@ -10,20 +10,17 @@ variable "WebServerDnsName" {
 variable "FromGatewayLogin" {
   default = "0.0.0.0/0"
 }
-variable "IPAddressUntrustedNetwork" {
-  default = "10.3.3.5"
+
+variable "IPAddressPublicNetwork" {
+  default = "10.1.0.5"
 }
-variable "IPAddressAppNetwork" {
-  default = "10.3.4.5"
+variable "IPAddressPrivatedNetwork" {
+  default = "10.1.1.5"
 }
 
 variable "IPAddressMgmtNetwork" {
-  default = "10.3.1.5"
+  default = "10.1.2.5"
 }
-variable "IPAddressInternetNetwork" {
-  default = "10.3.2.5"
-}
-
 variable "routeTableWeb" {
   default = "Web-to-FW"
 }
@@ -63,9 +60,12 @@ variable "db-vm-name" {
   default = "database-vm"
 }
 
-variable "resourcename" {}
-variable "resourcelocation" {}
-variable "mgmt_subnet" {}
-variable "internet_subnet" {}
-variable "untrusted_subnet" {}
-variable "app_subnet" {}
+variable "resource_group_name" {}
+variable "location" {}
+variable "securemgmt_subnet" {}
+variable "public_subnet" {}
+variable "private_subnet" {}
+
+variable "owner" {
+  
+}

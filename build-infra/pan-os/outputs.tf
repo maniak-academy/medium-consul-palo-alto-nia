@@ -8,7 +8,7 @@ output "FirewallIPURL" {
 output "privateipfwnic2" {
   value = azurerm_network_interface.VNIC2.ip_configuration[0].private_ip_address
 }
-output "privateipfwnic3" {
+output "privateipfwnic1" {
   value = azurerm_network_interface.VNIC1.ip_configuration[0].private_ip_address
 }
 output "FirewallFQDN" {

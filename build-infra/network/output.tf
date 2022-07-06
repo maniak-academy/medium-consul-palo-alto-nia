@@ -1,41 +1,61 @@
 
 
-
-output "resource_group_name" {
-  value = azurerm_resource_group.consulnetworkautomation.name
+# output "resource_group_name" {
+#   value = azurerm_resource_group.consulnetworkautomation
+  
+# }
+output "shared_network_vnet" {
+  value = module.shared-network.vnet_id
 }
 
-output "resource_group_location" {
-  value = azurerm_resource_group.consulnetworkautomation.location
+output "shared_network_subnets" {
+  value = module.shared-network.vnet_subnets
+}
+output "secure_network_subnets" {
+  value = module.secure-network.vnet_subnets
+}
+output "app_network_subnets" {
+  value = module.app-network.vnet_subnets
 }
 
-output "shared_svcs_vnet" {
-  value = module.shared-svcs-network.vnet_id
+output "shared_network_boundary_subnets" {
+  value = module.shared-network.vnet_subnets[0]
 }
 
-output "shared_svcs_subnets" {
-  value = module.shared-svcs-network.vnet_subnets
+output "shared_network_vault_subnets" {
+  value = module.shared-network.vnet_subnets[1]
 }
 
-output "mgmt_subnet" {
+output "shared_network_consul_subnets" {
+  value = module.shared-network.vnet_subnets[2]
+}
+
+output "secure_network_vnet" {
+  value = module.shared-network.vnet_id
+}
+
+output "secure_network_mgmt_subnet" {
+  value = module.secure-network.vnet_subnets[2]
+}
+
+output "secure_network_public_subnet" {
+  value = module.secure-network.vnet_subnets[0]
+}
+
+output "secure_network_private_subnet" {
+  value = module.secure-network.vnet_subnets[1]
+}
+
+
+output "app_network_vnet" {
+  value = module.shared-network.vnet_id
+}
+
+output "app_network_web_subnet" {
   value = module.app-network.vnet_subnets[0]
 }
 
-output "internet_subnet" {
+output "secure_network_db_subnet" {
   value = module.app-network.vnet_subnets[1]
 }
 
-output "untrusted_subnet" {
-  value = module.app-network.vnet_subnets[2]
-}
-
-output "app_subnet" {
-  value = module.app-network.vnet_subnets[3]
-}
-output "bastion_ip" {
-  value = azurerm_public_ip.bastion.ip_address
-}
-output "bastion_ip_password" {
-  value     = random_password.vm-password.result
-  sensitive = true
-}
