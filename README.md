@@ -1,6 +1,6 @@
 # medium-consul-palo-alto-nia
 
-![title](./images/network.png)
+![title](./images/consulnia.png)
 
 az vm image terms accept --publisher paloaltonetworks --offer vmseries-flex --plan bundle1 --subscription MYSUB
 
