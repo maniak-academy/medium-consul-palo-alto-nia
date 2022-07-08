@@ -38,10 +38,13 @@ resource "azurerm_linux_virtual_machine_scale_set" "web" {
       name      = "Web-IPConfiguration"
       subnet_id = var.web_subnet
       primary   = true
+      load_balancer_backend_address_pool_ids = [ azurerm_lb_backend_address_pool.web.id ]
 
     }
   }
 }
+
+
 
 
 resource "azurerm_network_security_group" "webserver-sg" {

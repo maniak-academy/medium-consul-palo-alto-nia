@@ -23,6 +23,6 @@ variable "web_subnet" {
 }
 
 variable "web_count" {
-  default = 1
+  default = 2
 }
 variable "consul_server_ip" {}

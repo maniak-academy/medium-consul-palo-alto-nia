@@ -15,4 +15,8 @@ output "consul_ip" {
   value = azurerm_network_interface.consul.private_ip_address
 }
 
+output "bastion_ip" {
+  value = azurerm_public_ip.bastion.ip_address
+}
+
 

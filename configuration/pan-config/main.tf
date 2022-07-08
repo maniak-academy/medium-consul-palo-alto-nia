@@ -1,4 +1,12 @@
-# Virtual router
+data "terraform_remote_state" "build-infra" {
+  backend = "local"
+
+  config = {
+    path = "../build-infra/terraform.tfstate"
+  }
+}
+
+#Virtual router
 
 resource "panos_virtual_router" "vr1" {
   vsys = "vsys1"
@@ -15,6 +23,15 @@ resource "panos_static_route_ipv4" "default_route" {
   destination    = "0.0.0.0/0"
   next_hop       = "10.1.0.1"
   interface      = panos_ethernet_interface.ethernet1_1.name
+}
+
+#route to web and db network 
+resource "panos_static_route_ipv4" "internal_route" {
+  name           = "internal_route"
+  virtual_router = panos_virtual_router.vr1.name
+  destination    = "10.3.0.0/16"
+  next_hop       = "10.1.1.1"
+  interface      = panos_ethernet_interface.ethernet1_2.name
 }
 
 # Service Object for port 9090
@@ -71,7 +88,7 @@ resource "panos_ethernet_interface" "ethernet1_2" {
 }
 
 resource "panos_zone" "private_zone" {
-  name = "Private"
+  name = "private"
   mode = "layer3"
 }
 
@@ -112,7 +129,8 @@ resource "panos_nat_rule_group" "app" {
       }
       destination {
         static_translation {
-          address = "10.3.1.5"
+          #address = data.terraform_remote_state.build-infra.outputs.web-lb
+          address = "10.3.1.4"
         }
       }
     }
@@ -125,10 +143,10 @@ resource "panos_nat_rule_group" "app" {
 resource "panos_security_rule_group" "allow_app_traffic" {
   rule {
     name                  = "Allow web to talk to secure"
-    source_zones          = ["any"]
+    source_zones          = ["public"]
     source_addresses      = ["any"]
     source_users          = ["any"]
-    destination_zones     = ["any"]
+    destination_zones     = ["private"]
     destination_addresses = ["any"]
     applications          = ["any"]
     services              = ["any"]
