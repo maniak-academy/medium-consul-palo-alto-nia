@@ -14,3 +14,7 @@ variable "owner" {
 variable "db_subnet" {
   
 }
+
+variable "app_subnet" {
+  
+}

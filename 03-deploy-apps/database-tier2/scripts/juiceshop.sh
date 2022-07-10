@@ -75,12 +75,12 @@ sudo chmod +x /usr/local/bin/docker-compose
 cat << EOF > /etc/consul.d/web.json
 {
   "service": {
-    "name": "prod-untrusted-juiceshop",
+    "name": "prod-db2-juiceshop",
     "port": 80,
     "checks": [
       {
-        "id": "prod-untrusted-juiceshop",
-        "name": "juiceshop TCP Check",
+        "id": "prod-db2-juiceshop",
+        "name": "db TCP Check",
         "tcp": "localhost:80",
         "interval": "10s",
         "timeout": "1s"

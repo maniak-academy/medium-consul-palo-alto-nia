@@ -13,19 +13,6 @@ module "secure-network" {
   }
 }
 
-resource "azurerm_virtual_network_peering" "sharedTOapp" {
-  name                      = "sharedTOapp"
-  resource_group_name       = var.resource_group_name
-  virtual_network_name      = "shared-network"
-  remote_virtual_network_id = module.app-network.vnet_id
-}
-
-resource "azurerm_virtual_network_peering" "appTOshared" {
-  name                      = "appTOshared"
-  resource_group_name       = var.resource_group_name
-  virtual_network_name      = "app-network"
-  remote_virtual_network_id = module.shared-network.vnet_id
-}
 
 module "shared-network" {
   source              = "Azure/network/azurerm"
@@ -41,6 +28,21 @@ module "shared-network" {
 }
 
 
+module "app-network" {
+  source              = "Azure/network/azurerm"
+  resource_group_name = var.resource_group_name
+  vnet_name           = "app-network"
+  address_space       = "10.3.0.0/16"
+  subnet_prefixes     = ["10.3.0.0/24","10.3.1.0/24", "10.3.2.0/24"]
+  subnet_names        = ["WEB", "APP", "DB"]
+  
+  tags = {
+    owner = var.owner
+  }
+}
+
+
+# VNET Peering between shared and secure
 resource "azurerm_virtual_network_peering" "sharedTOsecure" {
   name                      = "sharedTOsecure"
   resource_group_name       = var.resource_group_name
@@ -55,34 +57,17 @@ resource "azurerm_virtual_network_peering" "secureToshared" {
   remote_virtual_network_id = module.shared-network.vnet_id
 }
 
-
-module "app-network" {
-  source              = "Azure/network/azurerm"
-  resource_group_name = var.resource_group_name
-  vnet_name           = "app-network"
-  address_space       = "10.3.0.0/16"
-  subnet_prefixes     = ["10.3.1.0/24", "10.3.2.0/24"]
-  subnet_names        = ["WEB", "DB",]
-  
-  tags = {
-    owner = var.owner
-  }
-}
-
-
-
-resource "azurerm_virtual_network_peering" "secureTOapp" {
-  name                      = "secureTOapp"
+# VNET Peering between shared and app vnet
+resource "azurerm_virtual_network_peering" "sharedTOapp" {
+  name                      = "sharedTOapp"
   resource_group_name       = var.resource_group_name
-  virtual_network_name      = "secure-network"
+  virtual_network_name      = "shared-network"
   remote_virtual_network_id = module.app-network.vnet_id
 }
 
-resource "azurerm_virtual_network_peering" "appTOsecure" {
-  name                      = "appTOsecure"
+resource "azurerm_virtual_network_peering" "appTOshared" {
+  name                      = "appTOshared"
   resource_group_name       = var.resource_group_name
   virtual_network_name      = "app-network"
-  remote_virtual_network_id = module.secure-network.vnet_id
+  remote_virtual_network_id = module.shared-network.vnet_id
 }
-
-

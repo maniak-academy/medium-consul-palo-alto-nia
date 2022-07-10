@@ -24,6 +24,14 @@ output "paloalto_mgmt_ip" {
 output "web-lb" {
   value = module.loadbalancer.web-lb
 }
+
+output "app-lb" {
+  value = module.loadbalancer.app-lb
+}
+
+output "db-lb" {
+  value = module.loadbalancer.db-lb
+}
 output "WebFQDN" {
   value = "http://${module.pan-os.WebFQDN}"
   
@@ -51,11 +59,19 @@ output "consul_ip" {
 output "app_network_web_subnet" {
   value = module.network.app_network_web_subnet
 }
-
+output "app_network_app_subnet" {
+  value = module.network.app_network_app_subnet
+}
 output "app_network_db_subnet" {
   value = module.network.app_network_db_subnet
 }
 
 output "web-id" {
   value = module.loadbalancer.web-id
+}
+output "app-id" {
+  value = module.loadbalancer.app-id
+}
+output "db-id" {
+  value = module.loadbalancer.db-id
 }

@@ -51,6 +51,8 @@ module "loadbalancer" {
   location = var.location
   owner = var.owner
   web_subnet     = module.network.app_network_subnets[0]
+  app_subnet     = module.network.app_network_subnets[1]
+  db_subnet     = module.network.app_network_subnets[2]
   depends_on = [
     azurerm_resource_group.consulnetworkautomation
   ]
@@ -62,7 +64,8 @@ module "routing" {
   location = var.location
   owner = var.owner
   web_subnet     = module.network.app_network_subnets[0]
-  db_subnet     = module.network.app_network_subnets[1]
+  app_subnet     = module.network.app_network_subnets[1]
+  db_subnet     = module.network.app_network_subnets[2]
   depends_on = [
     azurerm_resource_group.consulnetworkautomation
   ]

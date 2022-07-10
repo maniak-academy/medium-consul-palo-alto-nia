@@ -55,6 +55,10 @@ output "app_network_web_subnet" {
   value = module.app-network.vnet_subnets[0]
 }
 
-output "app_network_db_subnet" {
+output "app_network_app_subnet" {
   value = module.app-network.vnet_subnets[1]
+}
+
+output "app_network_db_subnet" {
+  value = module.app-network.vnet_subnets[2]
 }
