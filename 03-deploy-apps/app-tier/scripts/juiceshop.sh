@@ -72,20 +72,18 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 
 
-cat << EOF > /etc/consul.d/web.json
-{
-  "service": {
-    "name": "prod-web-juiceshop",
-    "port": 80,
-    "checks": [
-      {
-        "id": "prod-web-juiceshop",
-        "name": "juiceshop TCP Check",
-        "tcp": "localhost:80",
-        "interval": "10s",
-        "timeout": "1s"
-      }
-    ]
+cat << EOF > /etc/consul.d/app.hcl
+service {
+  id      = "app-backend"
+  name    = "app-backend"
+  tags    = ["production","app"]
+  port    = 80
+  check {
+    id       = "app-backend"
+    name     = "TCP on port 80"
+    tcp      = "localhost:80"
+    interval = "10s"
+    timeout  = "1s"
   }
 }
 EOF

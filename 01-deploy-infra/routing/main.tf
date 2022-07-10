@@ -71,3 +71,39 @@ resource "azurerm_subnet_route_table_association" "db" {
  route_table_id            = azurerm_route_table.db-route-to-fw.id
 }
 
+
+
+resource "azurerm_route_table" "shared-route-to-fw" {
+  name                = "shared-route-to-fw"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+
+  route {
+    name                   = "shared-route-to-fw"
+    address_prefix         = "10.3.0.0/16"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = "10.1.1.5"
+  }
+
+  tags = {
+    environment = "Production"
+  }
+}
+
+
+resource "azurerm_subnet_route_table_association" "shared" {
+ subnet_id                 = var.consul_subnet
+ route_table_id            = azurerm_route_table.shared-route-to-fw.id
+}
+
+
+resource "azurerm_subnet_route_table_association" "boundary" {
+ subnet_id                 = var.boundary_subnet
+ route_table_id            = azurerm_route_table.shared-route-to-fw.id
+}
+
+
+resource "azurerm_subnet_route_table_association" "vault" {
+ subnet_id                 = var.vault_subnet
+ route_table_id            = azurerm_route_table.shared-route-to-fw.id
+}

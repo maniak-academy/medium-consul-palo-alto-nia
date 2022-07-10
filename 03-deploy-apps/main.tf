@@ -39,13 +39,3 @@ module "database-tier" {
   db-id = data.terraform_remote_state.environment.outputs.db-id
   db_count = var.db_count
 }
-
-module "database-tier2" {
-  source = "./database-tier2"
-  resource_group_name = data.terraform_remote_state.environment.outputs.azurerm_resource_group
-  location = data.terraform_remote_state.environment.outputs.location
-  owner = data.terraform_remote_state.environment.outputs.owner
-  db_subnet     = data.terraform_remote_state.environment.outputs.app_network_db_subnet
-  consul_server_ip       = data.terraform_remote_state.environment.outputs.consul_ip
-}
-

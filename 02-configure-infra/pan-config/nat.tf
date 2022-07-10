@@ -25,9 +25,10 @@ resource "panos_nat_rule_group" "app" {
   }
 }
 
+# outgoing nat rule
 resource "panos_nat_rule_group" "egress-nat" {
   rule {
-    name          = "egress-nat"
+    name          = "Allow outbound  traffic"
     audit_comment = "Ticket 12345"
     original_packet {
       source_zones          = [panos_zone.private_zone.name]

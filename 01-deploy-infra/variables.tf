@@ -13,3 +13,8 @@ variable "resource_group_name" {
   description = "Name of the Resource Group to create. If not provided, it will be auto-generated."
   type        = string
 }
+
+variable "boundary_version" {
+  type    = string
+  default = "0.9.1"
+}

@@ -45,6 +45,13 @@ module "sharedservices" {
   ]
 }
 
+# module "boundary" {
+#   source              = "./boundary"
+#   controller_vm_count = 1
+#   worker_vm_count     = 1
+#   boundary_version    = var.boundary_version
+# }
+
 module "loadbalancer" {
   source = "./loadbalancer"
   resource_group_name = var.resource_group_name
@@ -66,6 +73,9 @@ module "routing" {
   web_subnet     = module.network.app_network_subnets[0]
   app_subnet     = module.network.app_network_subnets[1]
   db_subnet     = module.network.app_network_subnets[2]
+  boundary_subnet     = module.network.shared_network_subnets[0]
+  vault_subnet     = module.network.shared_network_subnets[1]
+  consul_subnet     = module.network.shared_network_subnets[2]
   depends_on = [
     azurerm_resource_group.consulnetworkautomation
   ]

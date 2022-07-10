@@ -72,20 +72,18 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 
 
-cat << EOF > /etc/consul.d/web.json
-{
-  "service": {
-    "name": "prod-db2-juiceshop",
-    "port": 80,
-    "checks": [
-      {
-        "id": "prod-db2-juiceshop",
-        "name": "db TCP Check",
-        "tcp": "localhost:80",
-        "interval": "10s",
-        "timeout": "1s"
-      }
-    ]
+cat << EOF > /etc/consul.d/web.hcl
+service {
+  id      = "web-front"
+  name    = "web-front"
+  tags    = ["production","webfront"]
+  port    = 80
+  check {
+    id       = "web-front"
+    name     = "TCP on port 80"
+    tcp      = "localhost:80"
+    interval = "10s"
+    timeout  = "1s"
   }
 }
 EOF
@@ -104,6 +102,16 @@ sudo snap install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-
-docker pull bkimminich/juice-shop
-docker run -d -p 80:3000 bkimminich/juice-shop
+sleep 10
+cat << EOF > docker-compose.yml
+version: "3.7"
+services:
+  web:
+    image: nginxdemos/hello
+    ports:
+    - "80:80"
+    restart: always
+    command: [nginx-debug, '-g', 'daemon off;']
+    network_mode: "host"
+EOF
+sudo docker-compose up -d
