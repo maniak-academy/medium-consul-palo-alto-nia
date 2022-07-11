@@ -70,78 +70,18 @@ sudo snap install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-sleep 10
-cat << EOF > ./nginx.conf
-proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=STATIC:10m inactive=7d use_temp_path=off;
-
-upstream frontend_upstream {
-  server frontend:3000;
-}
-
-server {
-  listen 80;
-  server_name  localhost;
-
-  server_tokens off;
-
-  gzip on;
-  gzip_proxied any;
-  gzip_comp_level 4;
-  gzip_types text/css application/javascript image/svg+xml;
-
-  proxy_http_version 1.1;
-  proxy_set_header Upgrade $http_upgrade;
-  proxy_set_header Connection 'upgrade';
-  proxy_set_header Host $host;
-  proxy_cache_bypass $http_upgrade;
-
-  location /_next/static {
-    proxy_cache STATIC;
-    proxy_pass http://frontend_upstream;
-
-    # For testing cache - remove before deploying to production
-    add_header X-Cache-Status $upstream_cache_status;
-  }
-
-  location /static {
-    proxy_cache STATIC;
-    proxy_ignore_headers Cache-Control;
-    proxy_cache_valid 60m;
-    proxy_pass http://frontend_upstream;
-
-    # For testing cache - remove before deploying to production
-    add_header X-Cache-Status $upstream_cache_status;
-  }
-
-  location / {
-    proxy_pass http://frontend_upstream;
-  }
-
-  location /api {
-    proxy_pass http://public-api:8080;
-  }
-}
-EOF
 
 
-cat << EOF > ./conf.json
-{
-    "db_connection": "host=product-db port=5432 user=postgres password=password dbname=products sslmode=disable",
-    "bind_address": ":9090",
-    "metrics_address": ":9103"
-  }
-EOF
-
-cat << EOF > /etc/consul.d/web.hcl
+cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
-  id      = "web-front"
-  name    = "web-front"
-  tags    = ["production","webfront"]
-  port    = 80
+  id      = "fakeservice"
+  name    = "fakeservice"
+  tags    = ["production","fakeservice"]
+  port    = 9090
   check {
-    id       = "web-front"
-    name     = "TCP on port 80"
-    tcp      = "localhost:80"
+    id       = "fakeservice"
+    name     = "TCP on port 9090"
+    tcp      = "localhost:9090"
     interval = "10s"
     timeout  = "1s"
   }
@@ -161,6 +101,7 @@ sudo service consul status
 sudo snap install docker
 sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+
 
 sleep 10
 cat << EOF > docker-compose.yml
@@ -192,7 +133,7 @@ services:
   backend1:
     image: nicholasjackson/fake-service:v0.7.8
     environment:
-      LISTEN_ADDR: 0.0.0.0:9090
+      LISTEN_ADDR: 0.0.0.0:80
       MESSAGE: "backend1 response"
       NAME: "backend1"
       SERVER_TYPE: "http"

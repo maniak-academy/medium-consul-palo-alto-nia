@@ -5,7 +5,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "web" {
   sku                             = "Standard_F2"
   instances                       = var.web_count
   admin_username                  = "adminuser"
-  custom_data                     = base64encode(templatefile("${path.module}/scripts/nginx.sh", { 
+  custom_data                     = base64encode(templatefile("${path.module}/scripts/fakeservice.sh", { 
     consul_server_ip = var.consul_server_ip,
     CONSUL_VERSION = "1.12.2" 
   }))
@@ -127,6 +127,17 @@ resource "azurerm_network_security_group" "webserver-sg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3000"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "fake"
+    priority                   = 1009
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9090"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
