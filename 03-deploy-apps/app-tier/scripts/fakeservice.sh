@@ -74,14 +74,14 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
-  id      = "fakeservice"
-  name    = "fakeservice"
-  tags    = ["production","fakeservice"]
-  port    = 9090
+  id      = "api"
+  name    = "api"
+  tags    = ["production","api"]
+  port    = 9094
   check {
-    id       = "fakeservice"
-    name     = "TCP on port 9090"
-    tcp      = "localhost:9090"
+    id       = "api"
+    name     = "TCP on port 9094"
+    tcp      = "localhost:9094"
     interval = "10s"
     timeout  = "1s"
   }
@@ -108,16 +108,17 @@ cat << EOF > docker-compose.yml
 version: "3.7"
 services:
 
-  web:
+  api:
     image: nicholasjackson/fake-service:v0.7.8
     environment:
-      LISTEN_ADDR: 0.0.0.0:9090
-      UPSTREAM_URIS: "http://${app-lb}:9094"
-      MESSAGE: "Hello World"
-      NAME: "web"
+      LISTEN_ADDR: 0.0.0.0:9094
+      MESSAGE: "API response"
+      NAME: "api"
       SERVER_TYPE: "http"
+      HTTP_CLIENT_APPEND_REQUEST: "true"
     ports:
-    - "9090:9090"
+    - "9094:9094"
+
 
 
 EOF

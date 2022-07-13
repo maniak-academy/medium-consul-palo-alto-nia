@@ -10,10 +10,10 @@ resource "panos_address_group" "cts-addr-grp-web" {
 
 
 # Dynamic Address Group
-resource "panos_address_group" "cts-addr-grp-app" {
-    name = "cts-addr-grp-app"
+resource "panos_address_group" "cts-addr-grp-api" {
+    name = "cts-addr-grp-api"
     description = "Consul app Servers"
-    dynamic_match = "app"
+    dynamic_match = "api"
 #    dynamic_match = "'web' and 'app'"  # Example of multi-tag
 }
 

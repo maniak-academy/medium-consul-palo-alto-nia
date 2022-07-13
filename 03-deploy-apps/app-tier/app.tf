@@ -5,7 +5,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "app" {
   sku                             = "Standard_F2"
   instances                       = var.app_count
   admin_username                  = "adminuser"
-  custom_data                     = base64encode(templatefile("${path.module}/scripts/juiceshop.sh", { 
+  custom_data                     = base64encode(templatefile("${path.module}/scripts/fakeservice.sh", { 
     consul_server_ip = var.consul_server_ip,
     CONSUL_VERSION = "1.12.2" 
   }))

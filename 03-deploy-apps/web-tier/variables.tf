@@ -28,3 +28,6 @@ variable "consul_server_ip" {}
 variable "web-id" {
   
 }
+variable "app-lb" {
+  
+}

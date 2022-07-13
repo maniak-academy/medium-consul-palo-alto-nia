@@ -11,11 +11,13 @@ data "terraform_remote_state" "deploy-infra" {
 resource "panos_virtual_router" "vr1" {
   vsys = "vsys1"
   name = "vr1"
+  static_dist = 15
   interfaces = [
     panos_ethernet_interface.ethernet1_1.name,
     panos_ethernet_interface.ethernet1_2.name
   ]
 }
+
 
 resource "panos_static_route_ipv4" "default_route" {
   name           = "default"
@@ -26,10 +28,19 @@ resource "panos_static_route_ipv4" "default_route" {
 }
 
 #route to web and db network 
-resource "panos_static_route_ipv4" "internal_route" {
-  name           = "internal_route"
+resource "panos_static_route_ipv4" "web_route" {
+  name           = "web_route"
   virtual_router = panos_virtual_router.vr1.name
   destination    = "10.3.0.0/16"
+  next_hop       = "10.1.1.1"
+  interface      = panos_ethernet_interface.ethernet1_2.name
+}
+
+#route to shared network 
+resource "panos_static_route_ipv4" "shared_route" {
+  name           = "shared_route"
+  virtual_router = panos_virtual_router.vr1.name
+  destination    = "10.2.0.0/16"
   next_hop       = "10.1.1.1"
   interface      = panos_ethernet_interface.ethernet1_2.name
 }
@@ -55,15 +66,13 @@ resource "panos_ethernet_interface" "ethernet1_1" {
   depends_on         = [panos_management_profile.allow_ping_mgmt_profile]
 }
 
-resource "panos_zone" "public_zone" {
-  name = "public"
-  mode = "layer3"
-}
 
-resource "panos_zone_entry" "public_zone_ethernet1_1" {
-  zone      = panos_zone.public_zone.name
-  mode      = panos_zone.public_zone.mode
-  interface = panos_ethernet_interface.ethernet1_1.name
+
+resource "panos_zone" "public_zone" {
+  name           = "public"
+  mode           = "layer3"
+  interfaces     = ["${panos_ethernet_interface.ethernet1_1.name}"]
+  enable_user_id = true
 }
 
 
@@ -80,14 +89,8 @@ resource "panos_ethernet_interface" "ethernet1_2" {
 }
 
 resource "panos_zone" "private_zone" {
-  name = "private"
-  mode = "layer3"
+  name           = "private"
+  mode           = "layer3"
+  interfaces     = ["${panos_ethernet_interface.ethernet1_2.name}"]
+  enable_user_id = true
 }
-
-resource "panos_zone_entry" "private_zone_ethernet1_2" {
-  zone      = panos_zone.private_zone.name
-  mode      = panos_zone.private_zone.mode
-  interface = panos_ethernet_interface.ethernet1_2.name
-}
-
-

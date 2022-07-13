@@ -14,6 +14,7 @@ module "web-tier" {
   web_subnet     = data.terraform_remote_state.environment.outputs.app_network_web_subnet
   consul_server_ip       = data.terraform_remote_state.environment.outputs.consul_ip
   web-id = data.terraform_remote_state.environment.outputs.web-id
+  app-lb = data.terraform_remote_state.environment.outputs.app-lb
   web_count = var.web_count
 }
 

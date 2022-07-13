@@ -10,6 +10,7 @@ resource "azurerm_route_table" "web-route-to-fw" {
     next_hop_in_ip_address = "10.1.1.5"
   }
 
+
   tags = {
     environment = "Production"
   }
@@ -80,7 +81,7 @@ resource "azurerm_route_table" "shared-route-to-fw" {
 
   route {
     name                   = "shared-route-to-fw"
-    address_prefix         = "10.3.0.0/16"
+    address_prefix         = "10.0.0.0/8"
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = "10.1.1.5"
   }
