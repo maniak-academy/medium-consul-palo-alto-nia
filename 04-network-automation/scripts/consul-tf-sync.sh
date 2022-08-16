@@ -21,7 +21,7 @@ apt update -y
 sudo apt install vault terraform unzip -y
 
 #Download Consul
-export CONSUL_VERSION="1.12.2"
+export CONSUL_VERSION="1.13.0"
 curl --silent --remote-name https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 
 #Install Consul
