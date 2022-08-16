@@ -99,34 +99,3 @@ sudo service consul start
 sudo service consul status
 
 
-
-cat <<EOF > /opt/consul/cts-config.hcl
-log_level = "INFO"
-port = 8558
-syslog {}
-
-buffer_period {
-  enabled = true
-  min     = "5s"
-  max     = "20s"
-}
-
-id = "cts-01"
-
-
-consul {
-    address = "${local_ipv4}:8500"
-    service_registration {
-      enabled = true
-      service_name = "cts"
-      default_check {
-        enabled = true
-        address = "http://${local_ipv4}:8558"
-      }
-    }
-}
-
-
-EOF
-
-

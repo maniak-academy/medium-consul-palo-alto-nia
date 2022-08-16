@@ -29,13 +29,13 @@ resource "panos_service_object" "serf" {
 }
 
 
-resource "panos_security_rule_group" "allow_traffic" {
+resource "panos_security_rule_group" "allow_vault_app_network" {
     position_keyword = "top"
     #position_reference = panos_security_rule_group.deny_all.rule.0.name
     rule {
-        name = "Allow private zone to public"
+        name = "Vault to App VNet"
         source_zones = [panos_zone.private_zone.name]
-        source_addresses = ["any"]
+        source_addresses = ["10.2.1.0/24"]
         source_users = ["any"]
         destination_zones = [panos_zone.private_zone.name]
         destination_addresses = ["any"]
@@ -45,6 +45,41 @@ resource "panos_security_rule_group" "allow_traffic" {
         action = "allow"
     }
 }
+
+resource "panos_security_rule_group" "allow_consul_app_network" {
+    position_keyword = "top"
+    #position_reference = panos_security_rule_group.deny_all.rule.0.name
+    rule {
+        name = "Consul to App VNet"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["10.2.2.0/24"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["10.3.0.0/16"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
+resource "panos_security_rule_group" "allow_app_sharedservice_consul" {
+    position_keyword = "top"
+    #position_reference = panos_security_rule_group.deny_all.rule.0.name
+    rule {
+        name = "App VNet to Shared Service Consul"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["10.3.0.0/16"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["10.2.2.0/24"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
 
 resource "panos_security_rule_group" "out_traffic" {
     position_keyword = "top"

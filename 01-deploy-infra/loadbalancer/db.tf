@@ -21,15 +21,15 @@ resource "azurerm_lb_backend_address_pool" "db" {
 resource "azurerm_lb_probe" "db" {
   loadbalancer_id = azurerm_lb.db.id
   name            = "db-http"
-  port            = 80
+  port            = 9095
 }
 
 resource "azurerm_lb_rule" "db" {
   loadbalancer_id                = azurerm_lb.db.id
   name                           = "db"
   protocol                       = "Tcp"
-  frontend_port                  = 80
-  backend_port                   = 80
+  frontend_port                  = 9095
+  backend_port                   = 9095
   frontend_ip_configuration_name = "dbconfiguration"
   probe_id                       = azurerm_lb_probe.db.id
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.db.id]

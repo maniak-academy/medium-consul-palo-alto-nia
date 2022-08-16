@@ -5,7 +5,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "db" {
   sku                             = "Standard_F2"
   instances                       = var.db_count
   admin_username                  = "adminuser"
-  custom_data                     = base64encode(templatefile("${path.module}/scripts/juiceshop.sh", { 
+  custom_data                     = base64encode(templatefile("${path.module}/scripts/fakeservice.sh", { 
     consul_server_ip = var.consul_server_ip,
     CONSUL_VERSION = "1.12.2" 
   }))
@@ -120,13 +120,13 @@ resource "azurerm_network_security_group" "dbserver-sg" {
     destination_address_prefix = "*"
   }
   security_rule {
-    name                       = "juiceshop"
+    name                       = "db3"
     priority                   = 1008
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "3000"
+    destination_port_range     = "9095"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }

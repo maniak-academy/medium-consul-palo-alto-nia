@@ -76,7 +76,7 @@ cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
   id      = "api"
   name    = "api"
-  tags    = ["production","api"]
+  tags    = ["api"]
   port    = 9094
   check {
     id       = "api"
@@ -123,3 +123,8 @@ services:
 
 EOF
 sudo docker-compose up -d
+
+
+
+sleep 30
+nc -w0 -u 10.2.0.5 5140 <<< '<165>1 2016-01-01T12:08:21Z hostname app 1234 ID47 [exampleSDID@32473 iut="9" eventSource="test" eventID="123"] The following is app of local log'

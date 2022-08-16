@@ -72,16 +72,16 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 
 
-cat << EOF > /etc/consul.d/db.hcl
+cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
-  id      = "db-backend"
-  name    = "db-backend"
-  tags    = ["production","database"]
-  port    = 80
+  id      = "database"
+  name    = "database"
+  tags    = ["db"]
+  port    = 9095
   check {
-    id       = "db-backend"
-    name     = "TCP on port 80"
-    tcp      = "localhost:80"
+    id       = "database"
+    name     = "TCP on port 9095"
+    tcp      = "localhost:9095"
     interval = "10s"
     timeout  = "1s"
   }
@@ -103,5 +103,27 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 
-docker pull bkimminich/juice-shop
-docker run -d -p 80:3000 bkimminich/juice-shop
+sleep 10
+cat << EOF > docker-compose.yml
+version: "3.7"
+services:
+
+  database:
+    image: nicholasjackson/fake-service:v0.7.8
+    environment:
+      LISTEN_ADDR: 0.0.0.0:9095
+      MESSAGE: "database response"
+      NAME: "database"
+      SERVER_TYPE: "http"
+      HTTP_CLIENT_APPEND_REQUEST: "true"
+    ports:
+    - "9095:9095"
+
+
+
+EOF
+sudo docker-compose up -d
+
+
+sleep 30
+nc -w0 -u 10.2.0.5 5140 <<< '<165>1 2016-01-01T12:08:21Z hostname db 1234 ID47 [exampleSDID@32473 iut="9" eventSource="test" eventID="123"] The following is db of local log'

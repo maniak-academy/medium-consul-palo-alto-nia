@@ -18,12 +18,13 @@ variable "name_prefix" {
 variable "owner" {
 
 }
-variable "consul_subnet" {
 
-}
 variable "vault_subnet" {
 
 }
 variable "boundary_subnet" {
 
+}
+variable "consul_subnet" {
+  
 }

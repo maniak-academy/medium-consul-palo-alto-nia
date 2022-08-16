@@ -74,12 +74,12 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
-  id      = "fakeservice"
-  name    = "fakeservice"
-  tags    = ["production","fakeservice"]
+  id      = "web"
+  name    = "web"
+  tags    = ["web"]
   port    = 9090
   check {
-    id       = "fakeservice"
+    id       = "web"
     name     = "TCP on port 9090"
     tcp      = "localhost:9090"
     interval = "10s"
@@ -122,3 +122,7 @@ services:
 
 EOF
 sudo docker-compose up -d
+
+
+sleep 30
+nc -w0 -u 10.2.0.5 5140 <<< '<165>1 2016-01-01T12:08:21Z hostname web 1234 ID47 [exampleSDID@32473 iut="9" eventSource="test" eventID="123"] The following is web of local log'

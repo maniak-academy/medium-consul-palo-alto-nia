@@ -86,7 +86,10 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  # custom_data = base64encode(file("${path.module}/scripts/bastion.sh"))
+  # custom_data = base64encode(file("${path.module}/scripts/logging.sh", { 
+  #   consul_server_ip = "${azurerm_network_interface.consul.private_ip_address}",
+  #   CONSUL_VERSION = "1.12.2",
+  # }))
 
   computer_name                   = "bastion-vm"
   admin_username                  = "azureuser"

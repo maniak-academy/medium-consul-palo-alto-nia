@@ -5,18 +5,15 @@ resource "azurerm_linux_virtual_machine_scale_set" "app" {
   sku                             = "Standard_F2"
   instances                       = var.app_count
   admin_username                  = "azureuser"
+  admin_password                  = "P@ssw0rd!123123"
   custom_data                     = base64encode(templatefile("${path.module}/scripts/fakeservice.sh", { 
     consul_server_ip = var.consul_server_ip,
     CONSUL_VERSION = "1.12.2" 
   }))
 
-  disable_password_authentication = true
+  disable_password_authentication = false
 
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = tls_private_key.app.public_key_openssh
-  }
-
+  
   source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"

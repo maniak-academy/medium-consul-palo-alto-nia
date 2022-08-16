@@ -1,12 +1,18 @@
 output "bastion-ip" {
   value = "ssh -i bastion.pem azureuser@${module.sharedservices.bastion_ip}"
 }
+
+output "logging-ip" {
+  value = "ssh -i logging.pem azureuser@${module.sharedservices.logging_ip}"
+}
 output "vault_lb" {
   value = "http://${module.sharedservices.vault_lb}"
 }
-output "consul_lb" {
-  value = "http://${module.sharedservices.consul_lb}"
+
+output "vault_ip" {
+  value = module.sharedservices.vault_ip
 }
+
 output "pa_username" {
   value = module.pan-os.pa_username
 }
@@ -55,7 +61,9 @@ output "owner" {
 output "consul_ip" {
   value = module.sharedservices.consul_ip
 }
-
+output "consul_lb" {
+  value = "http://${module.sharedservices.consul_lb}"
+}
 output "app_network_web_subnet" {
   value = module.network.app_network_web_subnet
 }
@@ -65,7 +73,10 @@ output "app_network_app_subnet" {
 output "app_network_db_subnet" {
   value = module.network.app_network_db_subnet
 }
-
+output "shared_network_consul_subnets" {
+  value = module.network.shared_network_consul_subnets
+}
+  
 output "web-id" {
   value = module.loadbalancer.web-id
 }
