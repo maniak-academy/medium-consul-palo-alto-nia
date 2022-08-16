@@ -89,7 +89,24 @@ resource "panos_security_rule_group" "allow_app_sharedservice_consul" {
         source_addresses = ["10.3.0.0/16"]
         source_users = ["any"]
         destination_zones = [panos_zone.private_zone.name]
-        destination_addresses = ["10.2.2.0/24"]
+        destination_addresses = ["10.2.0.0/16"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
+resource "panos_security_rule_group" "allow_sharedservice_app" {
+    position_keyword = "top"
+    #position_reference = panos_security_rule_group.deny_all.rule.0.name
+    rule {
+        name = "Shared Service to App VNet"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["10.2.0.0/16"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["10.3.0.0/16"]
         applications = ["any"]
         services = ["any"]
         categories = ["any"]
@@ -106,6 +123,22 @@ resource "panos_security_rule_group" "alow_web_access_api" {
         source_users = ["any"]
         destination_zones = [panos_zone.private_zone.name]
         destination_addresses = ["cts-addr-grp-api"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
+resource "panos_security_rule_group" "allow_cts_pan" {
+    position_keyword = "top"
+    rule {
+        name = "Allow CTS to PAN"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["any"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["any"]
         applications = ["any"]
         services = ["any"]
         categories = ["any"]
