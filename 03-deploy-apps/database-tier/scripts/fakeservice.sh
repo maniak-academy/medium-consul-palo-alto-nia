@@ -74,12 +74,12 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 cat << EOF > /etc/consul.d/fakeservice.hcl
 service {
-  id      = "database"
-  name    = "database"
+  id      = "db"
+  name    = "db"
   tags    = ["db"]
   port    = 9095
   check {
-    id       = "database"
+    id       = "db"
     name     = "TCP on port 9095"
     tcp      = "localhost:9095"
     interval = "10s"

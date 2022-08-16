@@ -80,6 +80,53 @@ resource "panos_security_rule_group" "allow_app_sharedservice_consul" {
     }
 }
 
+resource "panos_security_rule_group" "cts-addr-grp-web" {
+    position_keyword = "top"
+    rule {
+        name = "cts-addr-grp-web"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["any"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["cts-addr-grp-web"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
+resource "panos_security_rule_group" "cts-addr-grp-db" {
+    position_keyword = "top"
+    rule {
+        name = "cts-addr-grp-db"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["any"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["cts-addr-grp-db"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
+
+resource "panos_security_rule_group" "cts-addr-grp-api" {
+    position_keyword = "top"
+    rule {
+        name = "cts-addr-grp-api"
+        source_zones = [panos_zone.private_zone.name]
+        source_addresses = ["any"]
+        source_users = ["any"]
+        destination_zones = [panos_zone.private_zone.name]
+        destination_addresses = ["cts-addr-grp-api"]
+        applications = ["any"]
+        services = ["any"]
+        categories = ["any"]
+        action = "allow"
+    }
+}
 
 resource "panos_security_rule_group" "out_traffic" {
     position_keyword = "top"
