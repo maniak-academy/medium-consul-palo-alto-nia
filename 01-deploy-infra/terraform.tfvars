@@ -1,3 +1,3 @@
 location             = "East US"
-resource_group_name = "maniakacademy-consul"
-owner   = "sebastian@maniak.io"
+resource_group_name = "hashicorp-consul-nia"
+owner   = "dev@dev.io"
