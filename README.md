@@ -32,68 +32,16 @@ Pull the code from the repo
 git clone https://github.com/maniak-academy/medium-consul-palo-alto-nia.git
 ```
 
-### Build the infrastructure
+## Build the infrastructure
+----------------------------------
 
-```
-├── build-infra
-│   ├── main.tf
-│   ├── network
-│   │   ├── main.tf
-│   │   ├── output.tf
-│   │   └── variables.tf
-│   ├── output.tf
-│   ├── pan-os
-│   │   ├── main.tf
-│   │   ├── outputs.tf
-│   │   ├── routes.tf
-│   │   ├── security.tf
-│   │   └── variables.tf
-│   ├── sharedservices
-│   │   ├── bastion.tf
-│   │   ├── certs
-│   │   ├── consul.tf
-│   │   ├── outputs.tf
-│   │   ├── scripts
-│   │   │   ├── consul.sh
-│   │   │   └── vault.sh
-│   │   ├── variables.tf
-│   │   └── vault.tf
-│   ├── terraform.tfvars
-│   ├── variables.tf
-│   ├── version.tf
-│   └── webservice
-│       ├── certs
-│       ├── outputs.tf
-│       ├── scripts
-│       │   └── juiceshop.sh
-│       ├── ssh-web.tf
-│       ├── variables.tf
-│       └── web.tf
-├── configuration
-│   ├── main.tf
-│   ├── pan-config
-│   │   ├── main.tf
-│   │   └── versions.tf
-│   ├── panos_commit
-│   │   └── panos-commit
-│   ├── variables.tf
-│   └── vault
-│       ├── main.tf
-│       └── variables.tf
+### Deploy the Infrastrutre
 
-```
+1. First you will need to jump into the build-infra directory 
 
-1. First you will need to jump into the build-infra directory ``` cd build-infra ```
-2. Initiate terraform with ```terraform init ```  to download the moudles required
-3. Next.. ``` terraform plan ```
-4. If everything passess, its time to execute terraform apply ``` terraform apply ```
-5. The output will give you all the information to access all the devices
+``` cd  01-deploy-infra ```
 
-### Configure the infrasturature
-Next step will be to configure the Palo Alto and Vault
-
-1. Cd into configure directory ``` cd configure ```
-2. executre
+Run Terraform
 
 ```
 terraform init
@@ -101,5 +49,49 @@ terraform plan
 terraform apply 
 ```
 
-### Access
-The default password for vault is root. You can log into the vault server to get the palo alto credentials.
+2. The output will give you all the information to access all the devices
+
+### Configure the Infrastrutre
+
+1. First you will need to jump into the configure-infra directory 
+
+``` cd  02-configure-infra ```
+
+Run Terraform
+
+```
+terraform init
+terraform plan
+terraform apply 
+```
+
+
+
+### Deploy Apps
+
+1. First you will need to jump into the deploy-apps directory 
+
+``` cd  03-deploy-apps ```
+
+Run Terraform
+
+```
+terraform init
+terraform plan
+terraform apply 
+```
+
+
+### Deploy Network Infrastructure Automation
+
+1. First you will need to jump into the network automation directory 
+
+``` cd  04-network-automation ```
+
+Run Terraform
+
+```
+terraform init
+terraform plan
+terraform apply 
+```
