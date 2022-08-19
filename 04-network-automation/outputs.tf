@@ -11,3 +11,7 @@ output "paloalto_mgmt_ip" {
 output "WebFQDN" {
   value = "${data.terraform_remote_state.environment.outputs.WebFQDN}/ui"
 }
+
+output "cts_ip" {
+  value = "ssh -i cts.pem azureuser@${azurerm_public_ip.cts.ip_address}"
+}  
