@@ -136,7 +136,7 @@ resource "azurerm_network_security_group" "vault" {
 resource "azurerm_network_interface_security_group_association" "vault" {
   network_interface_id      = azurerm_network_interface.vault.id
   network_security_group_id = azurerm_network_security_group.vault.id
-    depends_on = [
+  depends_on = [
     azurerm_linux_virtual_machine.vault
   ]
 }

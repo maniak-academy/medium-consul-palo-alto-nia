@@ -108,7 +108,7 @@ resource "azurerm_network_security_group" "consul" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-   security_rule {
+  security_rule {
     name                       = "HTTPS-80"
     priority                   = 1001
     direction                  = "Inbound"
@@ -212,7 +212,7 @@ resource "azurerm_network_security_group" "consul" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-security_rule {
+  security_rule {
     name                       = "cts"
     priority                   = 1010
     direction                  = "Inbound"
@@ -223,7 +223,7 @@ security_rule {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-   security_rule {
+  security_rule {
     name                       = "LOGGING"
     priority                   = 1011
     direction                  = "Inbound"
@@ -239,7 +239,7 @@ security_rule {
 resource "azurerm_network_interface_security_group_association" "consul" {
   network_interface_id      = azurerm_network_interface.consul.id
   network_security_group_id = azurerm_network_security_group.consul.id
-    depends_on = [
+  depends_on = [
     azurerm_linux_virtual_machine.consul
   ]
 }

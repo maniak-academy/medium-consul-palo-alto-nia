@@ -9,10 +9,13 @@ sudo apt-get install software-properties-common
 sudo add-apt-repository universe
 sudo apt-get update
 sudo apt-get jq
-sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install terraform
+
+
+
+#Install Dockers
+sudo snap install docker
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
 
 #Download Consul
@@ -26,28 +29,7 @@ sudo mv consul /usr/local/bin/
 consul -autocomplete-install
 complete -C /usr/local/bin/consul consul
 
-#Install Consul Terraform Sync
-
-export CTS_CONSUL_VERSION="0.6.0-beta1"
-export CONSUL_URL="https://releases.hashicorp.com/consul-terraform-sync"
-
-
-curl --silent --remote-name \
-  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_linux_amd64.zip
-
-curl --silent --remote-name \
-  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_SHA256SUMS
-
-curl --silent --remote-name \
-  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_SHA256SUMS.sig
-
-#Unzip the downloaded package and move the consul binary to /usr/bin/. Check consul is available on the system path.
-
-unzip consul-terraform-sync_${CTS_CONSUL_VERSION}_linux_amd64.zip
-mv consul-terraform-sync /usr/local/bin/consul-terraform-sync
-
 sudo mkdir --parents /opt/consul
-
 
 #Create Consul User
 sudo useradd --system --home /etc/consul.d --shell /bin/false consul
@@ -82,20 +64,40 @@ sudo touch /etc/consul.d/consul.hcl
 sudo chown --recursive consul:consul /etc/consul.d
 sudo chmod 640 /etc/consul.d/consul.hcl
 
-cat << EOF > /etc/consul.d/consul.hcl
-datacenter = "AcademyDC1"
-data_dir = "/opt/consul"
-server = true
-bootstrap_expect = 1
 
-client_addr = "0.0.0.0"
-ui = true
+cat << EOF > /etc/consul.d/consul.hcl
+data_dir = "/opt/consul"
+datacenter = "AcademyDC1"
+bind_addr = "{{ GetPrivateInterfaces | include \"network\" \"10.2.0.0/24\" | attr \"address\" }}"
+retry_join = ["${consul_server_ip}"]
+EOF
+
+
+cat << EOF > /etc/consul.d/logging.hcl
+service {
+  id      = "test"
+  name    = "test"
+  tags    = ["test"]
+  port    = 5140
+  check {
+    id       = "test"
+    name     = "UDP on port test"
+    tcp      = "localhost:5140"
+    interval = "30s"
+    timeout  = "10s"
+  }
+}
 EOF
 
 
 #Enable the service
-sudo systemctl enable consul
+sudo systemctl restart consul
 sudo service consul start
 sudo service consul status
 
 
+
+
+
+docker pull admiralobvious/tinysyslog
+docker run --rm --name tinysyslog -p 5140:5140/tcp -d admiralobvious/tinysyslog

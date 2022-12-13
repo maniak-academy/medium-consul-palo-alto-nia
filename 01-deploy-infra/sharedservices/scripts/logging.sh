@@ -19,7 +19,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 
 #Download Consul
-CONSUL_VERSION="1.12.2"
+CONSUL_VERSION="1.14.1"
 curl --silent --remote-name https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 
 #Install Consul

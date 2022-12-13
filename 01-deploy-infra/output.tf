@@ -43,7 +43,7 @@ output "db-lb" {
 }
 output "WebFQDN" {
   value = "http://${module.pan-os.WebFQDN}"
-  
+
 }
 output "privateipfwnic1" {
   value = module.pan-os.privateipfwnic1
@@ -53,13 +53,13 @@ output "privateipfwnic2" {
 }
 
 output "azurerm_resource_group" {
- value = var.resource_group_name
+  value = var.resource_group_name
 }
 output "location" {
- value = var.location
+  value = var.location
 }
 output "owner" {
- value = var.owner
+  value = var.owner
 }
 output "consul_ip" {
   value = module.sharedservices.consul_ip
@@ -79,7 +79,7 @@ output "app_network_db_subnet" {
 output "shared_network_consul_subnets" {
   value = module.network.shared_network_consul_subnets
 }
-  
+
 output "web-id" {
   value = module.loadbalancer.web-id
 }

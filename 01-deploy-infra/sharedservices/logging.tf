@@ -86,9 +86,9 @@ resource "azurerm_linux_virtual_machine" "logging" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  custom_data = base64encode(templatefile("${path.module}/scripts/logging.sh", { 
+  custom_data = base64encode(templatefile("${path.module}/scripts/logging.sh", {
     consul_server_ip = azurerm_network_interface.consul.private_ip_address,
-    CONSUL_VERSION = "1.12.2" 
+    CONSUL_VERSION   = "1.14.1"
   }))
 
   computer_name                   = "logging-vm"
@@ -111,7 +111,7 @@ resource "azurerm_network_security_group" "logging" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-   security_rule {
+  security_rule {
     name                       = "SSH-22"
     priority                   = 1001
     direction                  = "Inbound"
@@ -122,7 +122,7 @@ resource "azurerm_network_security_group" "logging" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-   security_rule {
+  security_rule {
     name                       = "LOGGING"
     priority                   = 1002
     direction                  = "Inbound"
@@ -139,7 +139,7 @@ resource "azurerm_network_security_group" "logging" {
 resource "azurerm_network_interface_security_group_association" "logging" {
   network_interface_id      = azurerm_network_interface.logging.id
   network_security_group_id = azurerm_network_security_group.logging.id
-    depends_on = [
+  depends_on = [
     azurerm_linux_virtual_machine.logging
   ]
 }

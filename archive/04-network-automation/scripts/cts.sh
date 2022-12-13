@@ -3,35 +3,16 @@ local_ipv4="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
 
 #Utils
 sudo apt-get install unzip
+sudo apt-get install unzip
 sudo apt-get update
 sudo apt-get install software-properties-common
 sudo add-apt-repository universe
 sudo apt-get update
 sudo apt-get jq
-sudo apt-get install curl gnupg lsb-release
-sudo curl --fail --silent --show-error --location https://apt.releases.hashicorp.com/gpg | \
-      gpg --dearmor | \
-      sudo dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
 
-sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
- sudo tee -a /etc/apt/sources.list.d/hashicorp.list
-
-sudo apt-get update
-
-sudo apt-get install consul-terraform-sync
-
-#vault env
-export VAULT_ADDR="http://${vault_addr}"
-export VAULT_TOKEN=$vault_token
-
-sudo apt update -y
-curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-apt update -y
-sudo apt install vault terraform unzip -y
 
 #Download Consul
-export CONSUL_VERSION="1.12.2"
+CONSUL_VERSION="1.14.1"
 curl --silent --remote-name https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
 
 #Install Consul
@@ -41,28 +22,33 @@ sudo mv consul /usr/local/bin/
 consul -autocomplete-install
 complete -C /usr/local/bin/consul consul
 
+#Install Consul Terraform Sync
+
+export CTS_CONSUL_VERSION="0.6.0-beta1"
+export CONSUL_URL="https://releases.hashicorp.com/consul-terraform-sync"
+
+
+curl --silent --remote-name \
+  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_linux_amd64.zip
+
+curl --silent --remote-name \
+  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_SHA256SUMS
+
+curl --silent --remote-name \
+  ${CONSUL_URL}/${CTS_CONSUL_VERSION}/consul-terraform-sync_${CTS_CONSUL_VERSION}_SHA256SUMS.sig
+
+#Unzip the downloaded package and move the consul binary to /usr/bin/. Check consul is available on the system path.
+
+unzip consul-terraform-sync_${CTS_CONSUL_VERSION}_linux_amd64.zip
+mv consul-terraform-sync /usr/local/bin/consul-terraform-sync
+
+sudo mkdir --parents /opt/consul
+
 
 #Create Consul User
 sudo useradd --system --home /etc/consul.d --shell /bin/false consul
 sudo mkdir --parents /opt/consul
 sudo chown --recursive consul:consul /opt/consul
-
-
-#Create config dir
-sudo mkdir --parents /etc/consul.d
-sudo touch /etc/consul.d/consul.hcl
-sudo chown --recursive consul:consul /etc/consul.d
-sudo chmod 640 /etc/consul.d/consul.hcl
-
-#Install consul terraform sync user and groups
-
-sudo useradd --system --home /etc/consul-tf-sync.d --shell /bin/false consul-nia
-sudo mkdir -p /opt/consul-tf-sync.d && sudo mkdir -p /etc/consul-tf-sync.d
-
-sudo chown --recursive consul-nia:consul-nia /opt/consul-tf-sync.d && \
-sudo chmod -R 0750 /opt/consul-tf-sync.d && \
-sudo chown --recursive consul-nia:consul-nia /etc/consul-tf-sync.d && \
-sudo chmod -R 0750 /etc/consul-tf-sync.d
 
 #Create Systemd Config
 sudo cat << EOF > /etc/systemd/system/consul.service
@@ -86,6 +72,15 @@ EOF
 
 
 
+#Create config dir
+sudo mkdir --parents /etc/consul.d
+sudo touch /etc/consul.d/consul.hcl
+sudo chown --recursive consul:consul /etc/consul.d
+sudo chmod 640 /etc/consul.d/consul.hcl
+
+
+
+
 #consul config
 cat << EOF > /etc/consul.d/consul.hcl
 data_dir = "/opt/consul"
@@ -93,21 +88,6 @@ datacenter = "academyDC1"
 retry_join = ["${consul_server_ip}"]
 EOF
 
-# cat << EOF > /etc/consul.d/cts.hcl
-# service {
-#   id      = "cts"
-#   name    = "cts"
-#   tags    = ["production","cts"]
-#   port    = 8558
-#   check {
-#     id       = "cts"
-#     name     = "CTS TCP on port 8558"
-#     tcp      = "localhost:8558"
-#     interval = "10s"
-#     timeout  = "1s"
-#   }
-# }
-# EOF
 
 
 # #Create Systemd Config for Consul Terraform Sync

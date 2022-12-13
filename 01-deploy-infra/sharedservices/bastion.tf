@@ -86,10 +86,17 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  # custom_data = base64encode(file("${path.module}/scripts/logging.sh", { 
-  #   consul_server_ip = "${azurerm_network_interface.consul.private_ip_address}",
-  #   CONSUL_VERSION = "1.12.2",
-  # }))
+  custom_data = base64encode(templatefile("${path.module}/scripts/bastion.sh", {
+    consul_server_ip = "${azurerm_network_interface.consul.private_ip_address}",
+    CONSUL_VERSION   = "1.14.1",
+    vault_addr       = "${azurerm_public_ip.vault.ip_address}",
+    panos_mgmt_addr  = "${var.panos_mgmt_addr}",
+    panos_username   = "${var.panos_username}",
+    panos_password   = "${var.panos_password}",
+    local_ipv4       = azurerm_network_interface.bastion.ip_configuration.0.private_ip_address
+
+  }))
+  # custom_data = base64encode(file("${path.module}/scripts/bastion.sh"))
 
   computer_name                   = "bastion-vm"
   admin_username                  = "azureuser"
@@ -103,6 +110,9 @@ resource "azurerm_linux_virtual_machine" "bastion" {
   tags = {
     environment = "staging"
   }
+  depends_on = [
+    azurerm_linux_virtual_machine.vault
+  ]
 }
 
 
@@ -111,7 +121,7 @@ resource "azurerm_network_security_group" "bastion" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-   security_rule {
+  security_rule {
     name                       = "SSH-22"
     priority                   = 1001
     direction                  = "Inbound"
@@ -122,13 +132,127 @@ resource "azurerm_network_security_group" "bastion" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+  security_rule {
+    name                       = "HTTPS-8500"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8500"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "RPC"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8300"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Serf"
+    priority                   = 1004
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8301"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "SSH"
+    priority                   = 1005
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "app"
+    priority                   = 1006
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9091"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "web2"
+    priority                   = 1007
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9094"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "app3"
+    priority                   = 1008
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9090"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "juiceshop1"
+    priority                   = 1009
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3000"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "cts"
+    priority                   = 1010
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8558"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  security_rule {
+    name                       = "LOGGING"
+    priority                   = 1011
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Udp"
+    source_port_range          = "*"
+    destination_port_range     = "5140"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 
 }
 
 resource "azurerm_network_interface_security_group_association" "bastion" {
   network_interface_id      = azurerm_network_interface.bastion.id
   network_security_group_id = azurerm_network_security_group.bastion.id
-    depends_on = [
+  depends_on = [
     azurerm_linux_virtual_machine.bastion
   ]
 }

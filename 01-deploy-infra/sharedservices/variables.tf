@@ -26,5 +26,14 @@ variable "boundary_subnet" {
 
 }
 variable "consul_subnet" {
-  
+
+}
+variable "panos_mgmt_addr" {
+
+}
+variable "panos_username" {
+
+}
+variable "panos_password" {
+
 }
