@@ -10,6 +10,7 @@ module "network" {
   resource_group_name = var.resource_group_name
   location            = var.location
   owner               = var.owner
+  use_for_each = true
   depends_on = [
     azurerm_resource_group.consulnetworkautomation
   ]
